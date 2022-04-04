@@ -8,62 +8,48 @@ class Historia extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      historial: [],
       paso: 0,
-      opcionElegida: '',
+      historia: data,
+      opcionElegida: "",
+      historial: []
+
     };
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.paso !== this.state.paso) {
-      this.state.historial.push(this.state.opcionElegida);
-    }
-  }
+manejaEleccion = (e) => {
+const esUltimoPaso = this.state.paso === 4;
+  this.setState({
+    paso: esUltimoPaso? 0 : this.state.paso + 1,
+    opcionElegida: esUltimoPaso? "" : e, 
+    historial: esUltimoPaso? [] : this.state.historial.concat(e)
+  })
+}
 
-  handleClick = (e) => {
-    const id = e.target.id;
-    if (this.state.paso >= 7) {
-      alert('Fin.');
-    } else if (id === 'A' && this.state.opcionElegida !== 'A') {
-      this.setState({
-        paso: this.state.paso + 1,
-        opcionElegida: 'A',
-      });
-    } else if (id === 'A' && this.state.opcionElegida === 'A') {
-      this.setState({
-        paso: this.state.paso + 2,
-      });
-    } else if (id === 'B' && this.state.opcionElegida === 'A') {
-      this.setState({
-        paso: this.state.paso + 3,
-        opcionElegida: 'B',
-      });
-    } else if (id === 'B') {
-      this.setState({
-        paso: this.state.paso + 2,
-        opcionElegida: 'B',
-      });
-    }
-  };
+//poner sweetalert
+componentDidMount() {
+  alert("Comienza la historia");
+}
 
   render() {
+
     return (
       <div className="layout">
-        <h1 className="historia">{data[this.state.paso].historia}</h1>
-        <Botones
-          handleClick={this.handleClick}
-          opcionA={data[this.state.paso].opciones.a}
-          opcionB={data[this.state.paso].opciones.b}
-        />
-        <Elegidas
-          opcionElegida={this.state.opcionElegida}
-          historial={this.state.historial.map(
-            (e, index) => (
-              <li key={index}>{e}</li>
-            ),
-            data[this.state.paso].id
-          )}
-        />
+     
+        <p className='historia'>{this.state.historia.filter(e => e.id === ((this.state.paso + 1).toString().concat(this.state.opcionElegida) )).pop().historia}</p>
+        <div>
+          <Botones/>
+          <ol>
+            <li><button onClick={() => this.manejaEleccion("a")}>A</button><p>{this.state.historia[this.state.paso].opciones.a}</p></li>
+            <li><button onClick={() => this.manejaEleccion("b")}>B</button><p>{this.state.historia[this.state.paso].opciones.b}</p></li>
+            
+          </ol>
+        </div>
+        <div>
+          <Elegidas/>
+          <ol>
+            {this.state.historial.map(e => <li key={e}>{e}</li>)}
+          </ol>
+        </div>
       </div>
     );
   }
